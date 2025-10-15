@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  # Aplikasi Flask Genset
+  genset-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: genset-flask-app
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Mount untuk development (hot reload)
+      - .:/app
+      # Volume untuk data persistence
+      - genset_data:/app/data
+      - genset_logs:/app/logs
+    networks:
+      - genset-network
+    restart: unless-stopped
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Redis untuk session storage (opsional)
+  redis:
+    image: redis:7-alpine
+    container_name: genset-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - genset-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL Database (opsional untuk future use)
+  postgres:
+    image: postgres:15-alpine
+    container_name: genset-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=genset_db
+      - POSTGRES_USER=genset_user
+      - POSTGRES_PASSWORD=genset_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - genset-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U genset_user -d genset_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx Reverse Proxy (opsional untuk production)
+  nginx:
+    image: nginx:alpine
+    container_name: genset-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - genset-network
+    depends_on:
+      - genset-app
+    restart: unless-stopped
+    profiles:
+      - production
+
+# Networks
+networks:
+  genset-network:
+    driver: bridge
+
+# Volumes
+volumes:
+  genset_data:
+    driver: local
+  genset_logs:
+    driver: local
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local

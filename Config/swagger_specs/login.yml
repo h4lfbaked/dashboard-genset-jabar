@@ -1,0 +1,80 @@
+tags:
+  - Authentication
+summary: Login pengguna
+description: |
+  Endpoint untuk autentikasi pengguna menggunakan username dan password.
+  Endpoint ini **TIDAK** memerlukan Bearer Token.
+  
+  **Default Users:**
+  - Username: `admin`, Password: `admin123` (Role: administrator)
+  - Username: `operator`, Password: `operator123` (Role: operator) 
+  - Username: `technician`, Password: `tech123` (Role: technician)
+  - Username: `viewer`, Password: `viewer123` (Role: viewer)
+
+parameters:
+  - in: body
+    name: credentials
+    required: true
+    schema:
+      $ref: '#/definitions/LoginRequest'
+
+responses:
+  200:
+    description: Login berhasil
+    schema:
+      $ref: '#/definitions/LoginResponse'
+    examples:
+      application/json:
+        success: true
+        status_code: 200
+        message: "Login successful"
+        data:
+          user:
+            username: "admin"
+            role: "administrator"
+            full_name: "Administrator"
+            email: "admin@genset.com"
+            is_active: true
+            created_at: "2024-01-01 00:00:00"
+            last_login: "2024-10-15 10:30:00"
+          session_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          expires_at: "2024-10-15T18:30:00"
+        timestamp: "2024-10-15T10:30:00"
+        
+  400:
+    description: Bad request - Input tidak valid
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        status_code: 400
+        message: "Username dan password harus diisi"
+        error_code: "INVALID_INPUT"
+        
+  401:
+    description: Unauthorized - Kredensial salah
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        status_code: 401
+        message: "Username atau password salah"
+        error_code: "INVALID_CREDENTIALS"
+        
+  403:
+    description: Forbidden - Akun tidak aktif
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        status_code: 403
+        message: "Akun tidak aktif"
+        error_code: "ACCOUNT_INACTIVE"
+        
+  500:
+    description: Internal server error
+    schema:
+      $ref: '#/definitions/ErrorResponse'

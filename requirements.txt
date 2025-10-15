@@ -1,0 +1,43 @@
+# Core Flask dependencies
+Flask==2.3.3
+Werkzeug==2.3.7
+
+# CORS support
+Flask-CORS==4.0.0
+
+# Swagger/OpenAPI documentation
+flasgger==0.9.7.1
+
+# Production WSGI server
+gunicorn==21.2.0
+
+# Redis untuk session storage
+redis==5.0.1
+
+# Database drivers (optional)
+psycopg2-binary==2.9.7
+SQLAlchemy==2.0.21
+
+# Environment management
+python-dotenv==1.0.0
+
+# Security
+cryptography==41.0.7
+
+# HTTP requests
+requests==2.31.0
+
+# JSON Web Token
+PyJWT==2.8.0
+
+# Date/time utilities
+python-dateutil==2.8.2
+
+# Logging
+loguru==0.7.2
+
+# Configuration management
+pydantic==2.4.2
+
+# Health check & system monitoring
+psutil==5.9.6
