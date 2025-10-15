@@ -1,6 +1,6 @@
 # Dockerfile untuk Aplikasi Flask Genset
 # Base image dengan Python 3.11 slim untuk ukuran yang optimal
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 # Maintainer information
 LABEL maintainer="genset-app@example.com"
