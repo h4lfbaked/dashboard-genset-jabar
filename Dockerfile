@@ -64,7 +64,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 VOLUME ["/app/data", "/app/logs"]
 
 # Default command
-CMD ["python", "Main.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "Main:app"]
 
 # Alternative commands (uncomment untuk production dengan Gunicorn)
 # CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--timeout", "120", "Main:app"]
